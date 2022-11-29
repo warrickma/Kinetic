@@ -1,0 +1,67 @@
+library(ggplot2)
+library(scales)
+library(svglite)
+data_1 = read.csv("trial_1.csv")
+#Clean up the data, remove unnecessary headers
+data_1 = data_1[-(1:650),(1:3)]
+colnames(data_1) = c("Time", "Displacement", "Force")
+data_1$Time = as.numeric(as.character(data_1$Time))
+data_1$Displacement = as.numeric(as.character(data_1$Displacement))
+data_1$Force = as.numeric(as.character(data_1$Force))
+#Compute Strain (mm/mm)
+data_1$Tensile_Strain = data_1$Displacement/14.18
+#Compute Stress
+data_1$Tensile_Stress = data_1$Force/(1.07*1.58)
+data_1$trial = "1"
+
+data_2 = read.csv("trial_2.csv")
+data_2 = data_2[-(1:650),(1:3)]
+colnames(data_2) = c("Time", "Displacement", "Force")
+data_2$Time = as.numeric(as.character(data_2$Time))
+data_2$Displacement = as.numeric(as.character(data_2$Displacement))
+data_2$Force = as.numeric(as.character(data_2$Force))
+data_2$Tensile_Strain = data_2$Displacement/15.31
+data_2$Tensile_Stress = data_2$Force/(1.58*1.05)
+data_2$trial = "2"
+
+data_3 = read.csv("trial_3.csv")
+data_3 = data_3[-(1:650),(1:3)]
+colnames(data_3) = c("Time", "Displacement", "Force")
+data_3$Time = as.numeric(as.character(data_3$Time))
+data_3$Displacement = as.numeric(as.character(data_3$Displacement))
+data_3$Force = as.numeric(as.character(data_3$Force))
+data_3$Tensile_Strain = data_3$Displacement/14.22
+data_3$Tensile_Stress = data_3$Force/(1.57*0.96)
+data_3$trial = "3"
+
+data_4 = read.csv("trial_4.csv")
+data_4 = data_4[-(1:650),(1:3)]
+colnames(data_4) = c("Time", "Displacement", "Force")
+data_4$Time = as.numeric(as.character(data_4$Time))
+data_4$Displacement = as.numeric(as.character(data_4$Displacement))
+data_4$Force = as.numeric(as.character(data_4$Force))
+data_4$Tensile_Strain = data_4$Displacement/13.5
+data_4$Tensile_Stress = data_4$Force/(1.53*0.98)
+data_4$trial = "4"
+#Combine trials in one single file
+subtotal = rbind(data_2, data_3)
+total = rbind(subtotal, data_4)
+
+ggplot(total) +
+  geom_path(aes(x = Tensile_Strain, y = Tensile_Stress, color = trial), size = 1) +
+  #Use Cornell branding color
+  scale_color_manual(name = "Trial",
+                     limits = c("2", "3", "4"),
+                     values = c("#000000", "#000000", "#000000")) +
+  labs(x = "Strain (mm/mm)", y = "Stress (kPa)") +
+  scale_x_continuous(limits = c(0,0.30), n.breaks = 5, labels = scales::percent) +
+  theme_classic() +
+  theme(
+    axis.text.x = element_text(size=10, color = "black", face = "bold"),
+    axis.text.y = element_text(size=10, color = "black", face = "bold"),
+    axis.title = element_text(size=10, color = "black", face = "bold"),
+    legend.title = element_text(size=10, color = "black", face = "bold"),
+    legend.text = element_text(size=10, color = "black", face = "bold"),
+    legend.position = "none")
+ggsave("tension.svg", width = 50, height = 50, units = "mm")
+levels(processed$Cycle)
